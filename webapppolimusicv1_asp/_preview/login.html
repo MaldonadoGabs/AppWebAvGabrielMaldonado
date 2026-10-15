@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>PoliMusic - Sign in</title>
+<link rel="icon" href="../images/favicon.ico">
+<link rel="stylesheet" href="../css/styles.css">
+</head>
+<body>
+
+<body class="auth-page">
+<svg xmlns="http://www.w3.org/2000/svg" style="display:none" aria-hidden="true">
+  <symbol id="i-note" viewBox="0 0 24 24"><path d="M12 3v10.55A4 4 0 1 0 14 17V7h4V3h-6z"/></symbol>
+</svg>
+
+<main class="auth-wrap">
+  <div class="auth-card">
+    <a class="brand auth-brand" href="dashboard-user.html">
+      <span class="brand-icon"><svg class="icon"><use href="#i-note"/></svg></span>
+      <span class="brand-name">Poli<em>Music</em></span>
+    </a>
+    <h1 class="auth-title">Welcome back</h1>
+    <p class="auth-sub">Sign in to browse the catalog and play your music.</p>
+
+    <div class="alert alert-info">You have been logged out. See you soon!</div>
+
+    <form method="post" action="#" autocomplete="on">
+      <div class="field">
+        <label for="username">Username</label>
+        <input type="text" id="username" name="username" value="" required autofocus placeholder="your username">
+      </div>
+      <div class="field">
+        <label for="password">Password</label>
+        <input type="password" id="password" name="password" required placeholder="your password">
+      </div>
+      <button type="submit" class="btn btn-primary btn-block">Sign in</button>
+    </form>
+
+    <div class="auth-hint">
+      <strong>Demo accounts</strong>
+      <span><code>userNormal</code> / <code>12345678</code> &mdash; normal user</span>
+      <span><code>userAdmin</code> / <code>12345678</code> &mdash; administrator</span>
+      <span><code>username1</code> / <code>12345678</code> &mdash; normal user</span>
+    </div>
+  </div>
+</main>
+</body>
+
+</body>
+</html>

@@ -1,0 +1,250 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>PoliMusic - Manage songs</title>
+<link rel="icon" href="../images/favicon.ico">
+<link rel="stylesheet" href="../css/styles.css">
+</head>
+<body>
+
+<header class="topbar">
+  <a class="brand" href="dashboard-user.html">
+    <span class="brand-icon"><svg class="icon"><use href="#i-note"/></svg></span>
+    <span class="brand-name">Poli<em>Music</em></span>
+  </a>
+
+  <nav class="mainnav" aria-label="Main navigation">
+    <a class="navlink" href="dashboard-admin.html">Home</a>
+    <a class="navlink" href="catalog-user.html">Artists</a>
+    <a class="navlink" href="catalog-user.html">Albums</a>
+    <a class="navlink" href="playlists-user.html">Playlists</a>
+      <div class="dropdown">
+        <button type="button" class="navlink dropdown-toggle" aria-haspopup="true" aria-expanded="false">Manage <span class="caret"></span></button>
+        <div class="dropdown-menu" role="menu">
+          <a role="menuitem" href="#"><svg class="icon"><use href="#i-note"/></svg> Songs</a>
+          <a role="menuitem" href="#"><svg class="icon"><use href="#i-user"/></svg> Artists</a>
+          <a role="menuitem" href="#"><svg class="icon"><use href="#i-list"/></svg> Albums</a>
+        </div>
+      </div>
+  </nav>
+
+  <form class="searchbox" action="search.html" method="get" role="search">
+    <svg class="icon searchbox-icon"><use href="#i-search"/></svg>
+    <input type="search" name="q" value="" placeholder="Search songs, artists, albums..." aria-label="Search songs, artists and albums">
+  </form>
+
+  <div class="userbox">
+    <span class="userbox-hello">Welcome, <strong>userAdmin</strong></span>
+    <span class="badge badge-admin">Administrator</span>
+    <a class="btn btn-outline btn-logout" href="login.html"><svg class="icon"><use href="#i-logout"/></svg> Log out</a>
+  </div>
+</header>
+<!-- ============================ player ============================ -->
+<div class="player" id="player">
+  <div class="p-now">
+    <span class="thumb thumb-player" id="pThumb">
+      <img id="pThumbImg" alt="" hidden>
+      <span class="thumb-note"><svg class="icon"><use href="#i-note"/></svg></span>
+    </span>
+    <span class="p-meta">
+      <span class="p-title" id="pTitle">Nothing playing</span>
+      <span class="p-sub" id="pSub">Pick a song from the list to start listening</span>
+    </span>
+  </div>
+
+  <div class="p-controls">
+    <div class="p-buttons">
+      <button type="button" class="p-btn" id="pPrev" title="Previous song" aria-label="Previous song"><svg class="icon"><use href="#i-prev"/></svg></button>
+      <button type="button" class="p-btn p-btn-main" id="pToggle" title="Play / Pause" aria-label="Play or pause">
+        <svg class="icon p-icon-play" id="pIconPlay"><use href="#i-play"/></svg>
+        <svg class="icon p-icon-pause" id="pIconPause" hidden><use href="#i-pause"/></svg>
+      </button>
+      <button type="button" class="p-btn" id="pNext" title="Next song" aria-label="Next song"><svg class="icon"><use href="#i-next"/></svg></button>
+    </div>
+    <div class="p-seek">
+      <span class="p-time" id="pCur">0:00</span>
+      <input type="range" id="pSeek" min="0" max="1000" value="0" step="1" aria-label="Seek">
+      <span class="p-time" id="pDur">0:00</span>
+    </div>
+  </div>
+
+  <div class="p-volume">
+    <svg class="icon"><use href="#i-volume"/></svg>
+    <input type="range" id="pVol" min="0" max="100" value="80" aria-label="Volume">
+  </div>
+
+  <audio id="audio" preload="metadata"></audio>
+</div>
+<!-- ===================== add-to-playlist modal ===================== -->
+<div class="modal-backdrop" id="addModal" hidden>
+  <div class="modal" role="dialog" aria-modal="true" aria-labelledby="addModalTitle">
+    <div class="modal-head">
+      <h3 id="addModalTitle">Add to playlist</h3>
+      <button type="button" class="modal-close" id="addModalClose" title="Close" aria-label="Close"><svg class="icon"><use href="#i-close"/></svg></button>
+    </div>
+    <p class="modal-song" id="addModalSong"></p>
+    <div class="modal-body" id="addModalBody">
+        <form class="modal-item" method="post" action="#">
+          <input type="hidden" name="action" value="add">
+          <input type="hidden" name="playlist" value="1">
+          <input type="hidden" class="pl-song-input" name="song" value="">
+          <button type="submit" class="modal-item-btn">
+            <svg class="icon"><use href="#i-list"/></svg>
+            <span class="modal-item-title">Playlist 1</span>
+            <span class="modal-item-sub">5 song(s)</span>
+          </button>
+        </form>
+        <form class="modal-item" method="post" action="#">
+          <input type="hidden" name="action" value="add">
+          <input type="hidden" name="playlist" value="2">
+          <input type="hidden" class="pl-song-input" name="song" value="">
+          <button type="submit" class="modal-item-btn">
+            <svg class="icon"><use href="#i-list"/></svg>
+            <span class="modal-item-title">Playlist 2</span>
+            <span class="modal-item-sub">4 song(s)</span>
+          </button>
+        </form>
+    </div>
+  </div>
+</div>
+
+<div class="toasts" id="toasts" aria-live="polite"></div>
+<script>window.PM_VROOT = "./";</script>
+<main class="container">
+
+  <section class="panel-head">
+    <div>
+      <h1 class="hero-title" style="font-size:26px">Manage songs</h1>
+      <p class="panel-sub">Create, edit and delete songs, and link them to their artists.</p>
+    </div>
+    <a class="btn btn-ghost btn-sm" href="dashboard-admin.html">
+      <svg class="icon"><use href="#i-prev"/></svg> Back to song list
+    </a>
+  </section>
+
+  <!-- ==================== edit song ==================== -->
+  <section class="panel form-panel">
+    <div class="panel-head">
+      <div>
+        <h2><svg class="icon"><use href="#i-pencil"/></svg> Edit song #1</h2>
+      </div>
+      <a class="btn btn-ghost btn-sm" href="#">Cancel</a>
+    </div>
+    <form method="post" action="#">
+      <input type="hidden" name="action" value="update">
+      <input type="hidden" name="id" value="1">
+      <div class="field-row">
+        <div class="field">
+          <label for="eName">Song name</label>
+          <input type="text" id="eName" name="name" maxlength="50" value="Adventure" required>
+        </div>
+        <div class="field">
+          <label for="ePath">File path</label>
+          <input type="text" id="ePath" name="path" maxlength="255" value="~/songFiles/bensound-adventure.mp3" required>
+          <div class="hint">Path inside the app, e.g. <code>~/songFiles/bensound-adventure.mp3</code></div>
+        </div>
+        <div class="field" style="max-width:130px">
+          <label for="ePlays">Plays</label>
+          <input type="number" id="ePlays" name="plays" min="0" value="0">
+        </div>
+      </div>
+      <div class="field">
+        <label>Artists</label>
+        <div class="checkgrid">
+          <label>
+            <input type="checkbox" name="artists" value="1" checked>
+            Juan Gabriel
+          </label>
+          <label>
+            <input type="checkbox" name="artists" value="2" checked>
+            Ana Gabriel
+          </label>
+          <label>
+            <input type="checkbox" name="artists" value="3" >
+            Mariah Carey
+          </label>
+          <label>
+            <input type="checkbox" name="artists" value="4" >
+            Elvis Presley
+          </label>
+          <label>
+            <input type="checkbox" name="artists" value="5" >
+            Edward Sheeran
+          </label>
+        </div>
+      </div>
+      <button type="submit" class="btn btn-primary">Save changes</button>
+    </form>
+  </section>
+
+  <!-- ==================== create song ==================== -->
+  <details class="panel form-panel">
+    <summary class="form-summary"><svg class="icon"><use href="#i-plus"/></svg> Create a new song</summary>
+    <form method="post" action="#">
+      <input type="hidden" name="action" value="create">
+      <div class="field-row">
+        <div class="field">
+          <label for="cName">Song name</label>
+          <input type="text" id="cName" name="name" maxlength="50" placeholder="e.g. Adventure" required>
+        </div>
+        <div class="field">
+          <label for="cPath">File path</label>
+          <input type="text" id="cPath" name="path" maxlength="255" placeholder="~/songFiles/bensound-adventure.mp3" required>
+          <div class="hint">Path inside the app, e.g. <code>~/songFiles/bensound-adventure.mp3</code></div>
+        </div>
+        <div class="field" style="max-width:130px">
+          <label for="cPlays">Plays</label>
+          <input type="number" id="cPlays" name="plays" min="0" value="0">
+        </div>
+      </div>
+      <div class="field">
+        <label>Artists</label>
+        <div class="checkgrid">
+          <label>
+            <input type="checkbox" name="artists" value="1">
+            Juan Gabriel
+          </label>
+          <label>
+            <input type="checkbox" name="artists" value="2">
+            Ana Gabriel
+          </label>
+          <label>
+            <input type="checkbox" name="artists" value="3">
+            Mariah Carey
+          </label>
+          <label>
+            <input type="checkbox" name="artists" value="4">
+            Elvis Presley
+          </label>
+          <label>
+            <input type="checkbox" name="artists" value="5">
+            Edward Sheeran
+          </label>
+        </div>
+      </div>
+      <button type="submit" class="btn btn-primary">Create song</button>
+    </form>
+  </details>
+
+  <!-- ==================== song list ==================== -->
+  <section class="panel">
+    <div class="panel-head">
+      <div>
+        <h2>All songs</h2>
+        <p class="panel-sub">Press <strong>Play</strong> to listen. Use the pencil to edit or the trash to delete.</p>
+      </div>
+    </div>
+    <script>window.PM_SONGS = [{"i":1,"t":"Adventure","a":"Ana Gabriel, Juan Gabriel","al":"Retro Album Music, Rock Album","img":"../albumImages/album3.png","s":"../songFiles/bensound-adventure.mp3"},{"i":2,"t":"Dreams","a":"Ana Gabriel, Juan Gabriel","al":"Classic Album, Relax Music, Rock Album","img":"../albumImages/album4.png","s":"../songFiles/bensound-dreams.mp3"},{"i":3,"t":"Energy","a":"Juan Gabriel, Mariah Carey","al":"Country Album, Relax Music, Retro Album Music, Rock Album","img":"../albumImages/album5.png","s":"../songFiles/bensound-energy.mp3"},{"i":4,"t":"Scifi","a":"Elvis Presley, Juan Gabriel","al":"Classic Album, Rock Album","img":"../albumImages/album4.png","s":"../songFiles/bensound-scifi.mp3"},{"i":5,"t":"Tomorrow","a":"Edward Sheeran, Juan Gabriel","al":"Country Album, Retro Album Music, Rock Album","img":"../albumImages/album5.png","s":"../songFiles/bensound-tomorrow.mp3"}];</script>
+    <div class='table-wrap'><table class='song-table'><thead><tr><th class='col-num' title='Track number'>#</th><th class='col-title'>Title</th><th class='col-artist'>Artist(s)</th><th class='col-album'>Album(s)</th><th class='col-plays' title='Times played'>Plays</th><th class='col-actions'>Actions</th></tr></thead><tbody><tr data-idx='0'><td class='col-num'>1</td><td class='col-title'><span class='cell-note'><svg class='icon'><use href='#i-note'/></svg></span><span class='song-name'>Adventure</span></td><td class='col-artist'>Ana Gabriel, Juan Gabriel</td><td class='col-album'>Retro Album Music, Rock Album</td><td class='col-plays'>0</td><td class='col-actions'><button type='button' class='btn-play' data-idx='0' title='Play Adventure' aria-label='Play Adventure'><svg class='icon'><use href='#i-play'/></svg></button><button type='button' class='btn-icon btn-add-pl' data-song='1' data-name='Adventure' title='Add Adventure to a playlist' aria-label='Add to playlist'><svg class='icon'><use href='#i-plus'/></svg></button><a class='btn-icon' href='#' title='Edit song' aria-label='Edit song'><svg class='icon'><use href='#i-pencil'/></svg></a><form class='inline-form-del' method='post' action='#' onsubmit='return confirm("Delete the song Adventure? This cannot be undone.")'><input type='hidden' name='action' value='delete'><input type='hidden' name='id' value='1'><button type='submit' class='btn-icon btn-icon-danger' title='Delete song' aria-label='Delete song'><svg class='icon'><use href='#i-trash'/></svg></button></form></td></tr><tr data-idx='1'><td class='col-num'>2</td><td class='col-title'><span class='cell-note'><svg class='icon'><use href='#i-note'/></svg></span><span class='song-name'>Dreams</span></td><td class='col-artist'>Ana Gabriel, Juan Gabriel</td><td class='col-album'>Classic Album, Relax Music, Rock Album</td><td class='col-plays'>1</td><td class='col-actions'><button type='button' class='btn-play' data-idx='1' title='Play Dreams' aria-label='Play Dreams'><svg class='icon'><use href='#i-play'/></svg></button><button type='button' class='btn-icon btn-add-pl' data-song='2' data-name='Dreams' title='Add Dreams to a playlist' aria-label='Add to playlist'><svg class='icon'><use href='#i-plus'/></svg></button><a class='btn-icon' href='#' title='Edit song' aria-label='Edit song'><svg class='icon'><use href='#i-pencil'/></svg></a><form class='inline-form-del' method='post' action='#' onsubmit='return confirm("Delete the song Dreams? This cannot be undone.")'><input type='hidden' name='action' value='delete'><input type='hidden' name='id' value='2'><button type='submit' class='btn-icon btn-icon-danger' title='Delete song' aria-label='Delete song'><svg class='icon'><use href='#i-trash'/></svg></button></form></td></tr><tr data-idx='2'><td class='col-num'>3</td><td class='col-title'><span class='cell-note'><svg class='icon'><use href='#i-note'/></svg></span><span class='song-name'>Energy</span></td><td class='col-artist'>Juan Gabriel, Mariah Carey</td><td class='col-album'>Country Album, Relax Music, Retro Album Music, Rock Album</td><td class='col-plays'>2</td><td class='col-actions'><button type='button' class='btn-play' data-idx='2' title='Play Energy' aria-label='Play Energy'><svg class='icon'><use href='#i-play'/></svg></button><button type='button' class='btn-icon btn-add-pl' data-song='3' data-name='Energy' title='Add Energy to a playlist' aria-label='Add to playlist'><svg class='icon'><use href='#i-plus'/></svg></button><a class='btn-icon' href='#' title='Edit song' aria-label='Edit song'><svg class='icon'><use href='#i-pencil'/></svg></a><form class='inline-form-del' method='post' action='#' onsubmit='return confirm("Delete the song Energy? This cannot be undone.")'><input type='hidden' name='action' value='delete'><input type='hidden' name='id' value='3'><button type='submit' class='btn-icon btn-icon-danger' title='Delete song' aria-label='Delete song'><svg class='icon'><use href='#i-trash'/></svg></button></form></td></tr><tr data-idx='3'><td class='col-num'>4</td><td class='col-title'><span class='cell-note'><svg class='icon'><use href='#i-note'/></svg></span><span class='song-name'>Scifi</span></td><td class='col-artist'>Elvis Presley, Juan Gabriel</td><td class='col-album'>Classic Album, Rock Album</td><td class='col-plays'>3</td><td class='col-actions'><button type='button' class='btn-play' data-idx='3' title='Play Scifi' aria-label='Play Scifi'><svg class='icon'><use href='#i-play'/></svg></button><button type='button' class='btn-icon btn-add-pl' data-song='4' data-name='Scifi' title='Add Scifi to a playlist' aria-label='Add to playlist'><svg class='icon'><use href='#i-plus'/></svg></button><a class='btn-icon' href='#' title='Edit song' aria-label='Edit song'><svg class='icon'><use href='#i-pencil'/></svg></a><form class='inline-form-del' method='post' action='#' onsubmit='return confirm("Delete the song Scifi? This cannot be undone.")'><input type='hidden' name='action' value='delete'><input type='hidden' name='id' value='4'><button type='submit' class='btn-icon btn-icon-danger' title='Delete song' aria-label='Delete song'><svg class='icon'><use href='#i-trash'/></svg></button></form></td></tr><tr data-idx='4'><td class='col-num'>5</td><td class='col-title'><span class='cell-note'><svg class='icon'><use href='#i-note'/></svg></span><span class='song-name'>Tomorrow</span></td><td class='col-artist'>Edward Sheeran, Juan Gabriel</td><td class='col-album'>Country Album, Retro Album Music, Rock Album</td><td class='col-plays'>4</td><td class='col-actions'><button type='button' class='btn-play' data-idx='4' title='Play Tomorrow' aria-label='Play Tomorrow'><svg class='icon'><use href='#i-play'/></svg></button><button type='button' class='btn-icon btn-add-pl' data-song='5' data-name='Tomorrow' title='Add Tomorrow to a playlist' aria-label='Add to playlist'><svg class='icon'><use href='#i-plus'/></svg></button><a class='btn-icon' href='#' title='Edit song' aria-label='Edit song'><svg class='icon'><use href='#i-pencil'/></svg></a><form class='inline-form-del' method='post' action='#' onsubmit='return confirm("Delete the song Tomorrow? This cannot be undone.")'><input type='hidden' name='action' value='delete'><input type='hidden' name='id' value='5'><button type='submit' class='btn-icon btn-icon-danger' title='Delete song' aria-label='Delete song'><svg class='icon'><use href='#i-trash'/></svg></button></form></td></tr></tbody></table></div>
+  </section>
+
+</main>
+
+<footer class="sitefoot">
+  <p>PoliMusic &middot; a Classic ASP music app &middot; <a href="dashboard-user.html">Back to home</a></p>
+</footer>
+<script src='../js/app.js'></script>
+</body>
+</html>

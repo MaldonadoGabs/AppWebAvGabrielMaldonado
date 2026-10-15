@@ -1,0 +1,22 @@
+﻿=== OS / IIS version ===
+
+
+SetupString  : IIS 10.0
+MajorVersion : 10
+MinorVersion : 0
+
+
+
+=== IIS-ASP feature ===
+=== Services ===
+
+Name   Status
+----   ------
+W3SVC Running
+WAS   Running
+
+
+=== App Pools ===
+WebAdministration module unavailable: Process should have elevated status to access IIS configuration data.
+=== Application log: ASP / IIS / Application errors (last 40) ===
+=== DONE ===

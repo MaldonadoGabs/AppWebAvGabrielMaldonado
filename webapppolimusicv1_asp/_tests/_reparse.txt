@@ -1,0 +1,5 @@
+﻿C:\Users\gabri\source  Attr=Directory  LinkType=  Target=System.Collections.Generic.List`1[System.String]
+C:\Users\gabri\source\repos  Attr=Directory  LinkType=  Target=System.Collections.Generic.List`1[System.String]
+C:\Users\gabri\source\repos\AppWebAvGabrielMaldonado  Attr=Directory  LinkType=  Target=System.Collections.Generic.List`1[System.String]
+C:\Users\gabri\source\repos\AppWebAvGabrielMaldonado\webapppolimusicv1_asp  Attr=Directory  LinkType=  Target=System.Collections.Generic.List`1[System.String]
+C:\inetpub\wwwroot\webapppolimusicv1_asp  Attr=Directory  LinkType=  Target=System.Collections.Generic.List`1[System.String]

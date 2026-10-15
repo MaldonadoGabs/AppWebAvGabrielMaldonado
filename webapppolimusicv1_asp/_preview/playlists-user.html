@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>PoliMusic - Playlists</title>
+<link rel="icon" href="../images/favicon.ico">
+<link rel="stylesheet" href="../css/styles.css">
+</head>
+<body>
+
+<header class="topbar">
+  <a class="brand" href="dashboard-user.html">
+    <span class="brand-icon"><svg class="icon"><use href="#i-note"/></svg></span>
+    <span class="brand-name">Poli<em>Music</em></span>
+  </a>
+
+  <nav class="mainnav" aria-label="Main navigation">
+    <a class="navlink" href="dashboard-user.html">Home</a>
+    <a class="navlink" href="catalog-user.html">Artists</a>
+    <a class="navlink" href="catalog-user.html">Albums</a>
+    <a class="navlink" href="playlists-user.html">Playlists</a>
+  </nav>
+
+  <form class="searchbox" action="search.html" method="get" role="search">
+    <svg class="icon searchbox-icon"><use href="#i-search"/></svg>
+    <input type="search" name="q" value="" placeholder="Search songs, artists, albums..." aria-label="Search songs, artists and albums">
+  </form>
+
+  <div class="userbox">
+    <span class="userbox-hello">Welcome, <strong>userNormal</strong></span>
+    <span class="badge badge-user">User</span>
+    <a class="btn btn-outline btn-logout" href="login.html"><svg class="icon"><use href="#i-logout"/></svg> Log out</a>
+  </div>
+</header>
+<!-- ============================ player ============================ -->
+<div class="player" id="player">
+  <div class="p-now">
+    <span class="thumb thumb-player" id="pThumb">
+      <img id="pThumbImg" alt="" hidden>
+      <span class="thumb-note"><svg class="icon"><use href="#i-note"/></svg></span>
+    </span>
+    <span class="p-meta">
+      <span class="p-title" id="pTitle">Nothing playing</span>
+      <span class="p-sub" id="pSub">Pick a song from the list to start listening</span>
+    </span>
+  </div>
+
+  <div class="p-controls">
+    <div class="p-buttons">
+      <button type="button" class="p-btn" id="pPrev" title="Previous song" aria-label="Previous song"><svg class="icon"><use href="#i-prev"/></svg></button>
+      <button type="button" class="p-btn p-btn-main" id="pToggle" title="Play / Pause" aria-label="Play or pause">
+        <svg class="icon p-icon-play" id="pIconPlay"><use href="#i-play"/></svg>
+        <svg class="icon p-icon-pause" id="pIconPause" hidden><use href="#i-pause"/></svg>
+      </button>
+      <button type="button" class="p-btn" id="pNext" title="Next song" aria-label="Next song"><svg class="icon"><use href="#i-next"/></svg></button>
+    </div>
+    <div class="p-seek">
+      <span class="p-time" id="pCur">0:00</span>
+      <input type="range" id="pSeek" min="0" max="1000" value="0" step="1" aria-label="Seek">
+      <span class="p-time" id="pDur">0:00</span>
+    </div>
+  </div>
+
+  <div class="p-volume">
+    <svg class="icon"><use href="#i-volume"/></svg>
+    <input type="range" id="pVol" min="0" max="100" value="80" aria-label="Volume">
+  </div>
+
+  <audio id="audio" preload="metadata"></audio>
+</div>
+<!-- ===================== add-to-playlist modal ===================== -->
+<div class="modal-backdrop" id="addModal" hidden>
+  <div class="modal" role="dialog" aria-modal="true" aria-labelledby="addModalTitle">
+    <div class="modal-head">
+      <h3 id="addModalTitle">Add to playlist</h3>
+      <button type="button" class="modal-close" id="addModalClose" title="Close" aria-label="Close"><svg class="icon"><use href="#i-close"/></svg></button>
+    </div>
+    <p class="modal-song" id="addModalSong"></p>
+    <div class="modal-body" id="addModalBody">
+        <form class="modal-item" method="post" action="#">
+          <input type="hidden" name="action" value="add">
+          <input type="hidden" name="playlist" value="1">
+          <input type="hidden" class="pl-song-input" name="song" value="">
+          <button type="submit" class="modal-item-btn">
+            <svg class="icon"><use href="#i-list"/></svg>
+            <span class="modal-item-title">Playlist 1</span>
+            <span class="modal-item-sub">5 song(s)</span>
+          </button>
+        </form>
+        <form class="modal-item" method="post" action="#">
+          <input type="hidden" name="action" value="add">
+          <input type="hidden" name="playlist" value="2">
+          <input type="hidden" class="pl-song-input" name="song" value="">
+          <button type="submit" class="modal-item-btn">
+            <svg class="icon"><use href="#i-list"/></svg>
+            <span class="modal-item-title">Playlist 2</span>
+            <span class="modal-item-sub">4 song(s)</span>
+          </button>
+        </form>
+    </div>
+  </div>
+</div>
+
+<div class="toasts" id="toasts" aria-live="polite"></div>
+<script>window.PM_VROOT = "./";</script>
+<main class="container">
+  <section class="panel">
+    <div class="panel-head">
+      <div>
+        <h2>Your playlists</h2>
+        <p class="panel-sub">Create your own playlists and fill them with the songs you like.</p>
+      </div>
+    </div>
+
+    <form class="inline-form" method="post" action="#" style="margin-bottom:18px">
+      <input type="hidden" name="action" value="create">
+      <input type="text" name="title" maxlength="50" required placeholder="New playlist name" aria-label="New playlist name">
+      <select name="type" aria-label="Playlist type"><option value="0">Public</option><option value="1">Private</option></select>
+      <button type="submit" class="btn btn-primary">
+        <svg class="icon"><use href="#i-plus"/></svg> Create playlist
+      </button>
+    </form>
+
+    <div class="cards">
+      <a class="card" href="playlist-detail.html">
+        <span class="thumb">
+          <img src="../PlaylistImages/default.jpg" alt="" loading="lazy">
+          <span class="thumb-note"><svg class="icon"><use href="#i-list"/></svg></span>
+        </span>
+        <span class="card-title">Playlist 1</span>
+        <span class="card-sub">5 song(s) &middot; Private</span>
+      </a>
+      <a class="card" href="playlist-detail.html">
+        <span class="thumb">
+          <img src="../PlaylistImages/playlist1.png" alt="" loading="lazy">
+          <span class="thumb-note"><svg class="icon"><use href="#i-list"/></svg></span>
+        </span>
+        <span class="card-title">Playlist 2</span>
+        <span class="card-sub">4 song(s) &middot; Public</span>
+      </a>
+      <a class="card" href="playlist-detail.html">
+        <span class="thumb">
+          <img src="../PlaylistImages/playlist2.png" alt="" loading="lazy">
+          <span class="thumb-note"><svg class="icon"><use href="#i-list"/></svg></span>
+        </span>
+        <span class="card-title">Playlist 3</span>
+        <span class="card-sub">1 song(s) &middot; Public</span>
+      </a>
+      <a class="card" href="playlist-detail.html">
+        <span class="thumb">
+          <img src="../PlaylistImages/playlist3.png" alt="" loading="lazy">
+          <span class="thumb-note"><svg class="icon"><use href="#i-list"/></svg></span>
+        </span>
+        <span class="card-title">Playlist 4</span>
+        <span class="card-sub">2 song(s) &middot; Private</span>
+      </a>
+      <a class="card" href="playlist-detail.html">
+        <span class="thumb">
+          <img src="../PlaylistImages/playlist4.png" alt="" loading="lazy">
+          <span class="thumb-note"><svg class="icon"><use href="#i-list"/></svg></span>
+        </span>
+        <span class="card-title">Playlist 5</span>
+        <span class="card-sub">1 song(s) &middot; Public</span>
+      </a>
+    </div>
+  </section>
+</main>
+
+<footer class="sitefoot">
+  <p>PoliMusic &middot; a Classic ASP music app &middot; <a href="dashboard-user.html">Back to home</a></p>
+</footer>
+<script src='../js/app.js'></script>
+</body>
+</html>
