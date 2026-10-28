@@ -1,0 +1,10 @@
+﻿################################################################################
+# This .gitignore file was automatically created by Microsoft(R) Visual Studio.
+################################################################################
+
+/WebAppPoliMusicV2/bin
+/.vs/SlnAppPoliMusic.slnx/config
+/WebAppPoliMusicV2/obj/Debug
+/WebAppPoliMusicV2/WebAppPoliMusicV2.csproj.user
+*.csproj.user
+/.vs/SlnAppPoliMusic.slnx/FileContentIndex
